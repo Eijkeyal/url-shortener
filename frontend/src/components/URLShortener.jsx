@@ -34,9 +34,8 @@ export default function URLShortener() {
         if (!code) return;
 
         try {
-            console.log(`Fetching stats for code: ${code}`);
-            const statsResponse = await fetch(
-                `http://localhost:8080/api/stats/${code}`
+           const statsResponse = await fetch(
+                `https://url-shortener-2-ymnf.onrender.com/api/stats/${code}`
             );
 
             if (statsResponse.ok) {
