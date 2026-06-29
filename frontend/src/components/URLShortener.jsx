@@ -11,7 +11,7 @@ export default function URLShortener() {
     const [clicks, setClicks] = useState(0);
     const [shortCode, setShortCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [totalLinks, setTotalLinks] = useState(0); // State for total links generated
+    const [totalLinks, setTotalLinks] = useState(0);
 
     // Validate URL format
     const isValidUrl = (string) => {
@@ -55,7 +55,6 @@ export default function URLShortener() {
 
     // Load saved data on component mount
     useEffect(() => {
-        // Load saved URL data from localStorage
         const savedUrlData = localStorage.getItem('shortUrlData');
         if (savedUrlData) {
             try {
@@ -70,13 +69,11 @@ export default function URLShortener() {
             }
         }
 
-        // Load total links count from localStorage
         const savedTotalLinks = localStorage.getItem('totalLinks');
         if (savedTotalLinks) {
             setTotalLinks(parseInt(savedTotalLinks, 10));
         }
 
-        // Auto-refresh clicks every 5 seconds
         const interval = setInterval(() => {
             if (shortCode) {
                 console.log("Auto-refreshing clicks...");
@@ -87,7 +84,6 @@ export default function URLShortener() {
         return () => clearInterval(interval);
     }, []);
 
-    // Update interval when shortCode changes
     useEffect(() => {
         if (shortCode) {
             fetchStats(shortCode);
@@ -136,7 +132,6 @@ export default function URLShortener() {
             const data = await response.json();
             console.log("Shorten response:", data);
 
-            // Extract the code from the short URL
             const code = data.shortUrl.split("/").pop();
 
             setShortUrl(data.shortUrl);
@@ -146,19 +141,16 @@ export default function URLShortener() {
             setError("");
             setClicks(0);
 
-            // Increment total links count
             const newTotalLinks = totalLinks + 1;
             setTotalLinks(newTotalLinks);
             localStorage.setItem('totalLinks', newTotalLinks.toString());
 
-            // Save to localStorage
             localStorage.setItem('shortUrlData', JSON.stringify({
                 shortUrl: data.shortUrl,
                 originalUrl: url,
                 shortCode: code
             }));
 
-            // Fetch stats
             await fetchStats(code);
 
         } catch (error) {
@@ -169,14 +161,12 @@ export default function URLShortener() {
         }
     };
 
-    // Manual refresh
     const refreshClicks = () => {
         if (shortCode) {
             fetchStats(shortCode);
         }
     };
 
-    // Copy to clipboard
     const copyToClipboard = async () => {
         try {
             await navigator.clipboard.writeText(shortUrl);
@@ -187,7 +177,6 @@ export default function URLShortener() {
         }
     };
 
-    // Clear saved data and reset
     const clearSavedUrl = () => {
         localStorage.removeItem('shortUrlData');
         setShortUrl('');
@@ -197,7 +186,6 @@ export default function URLShortener() {
         setClicks(0);
     };
 
-    // Handle Enter key press
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             shortenUrl();
@@ -205,34 +193,35 @@ export default function URLShortener() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0f2847] to-[#1a3a52]">
-            <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="min-h-screen bg-slate-50">
+            <div className="container mx-auto px-5 py-16 max-w-2xl">
                 {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold text-white mb-4">Shorten Your Links</h1>
-                    <p className="text-xl text-white opacity-90 max-w-2xl mx-auto">
-                        Create shorter, trackable links that engage your audience and connect them to the right information
+                <div className="mb-12">
+                    <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-4 leading-tight">
+                        Create short links
+                    </h1>
+                    <p className="text-lg text-slate-600 leading-relaxed">
+                        Turn long URLs into clean, trackable short links. Get insights into who clicks, when, and where.
                     </p>
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-2xl p-10">
-                    {/* Error Message */}
-                    {error && (
-                        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6 border border-red-300">
-                            {error}
-                        </div>
-                    )}
+                {/* Main Card */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    {/* Top accent line */}
+                    <div className="h-0.5 bg-gradient-to-r from-blue-500 via-slate-300 to-slate-200"></div>
 
-                    {/* Short Link Section */}
-                    <div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Shorten a long link</h2>
-                        <p className="text-gray-600 mb-8">No credit card required.</p>
+                    <div className="p-8 md:p-10">
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="text-red-800 text-sm font-medium">{error}</p>
+                            </div>
+                        )}
 
-                        {/* Form Group */}
-                        <div className="mb-6">
-                            <label htmlFor="longUrl" className="block font-semibold text-gray-900 mb-3">
-                                Paste your long link here
+                        {/* Form Section */}
+                        <div className="mb-10">
+                            <label htmlFor="longUrl" className="block text-sm font-semibold text-slate-900 mb-3">
+                                Paste your long URL
                             </label>
                             <input
                                 type="url"
@@ -241,7 +230,7 @@ export default function URLShortener() {
                                 value={longUrl}
                                 onChange={(e) => setLongUrl(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 transition-colors"
+                                className="w-full px-4 py-3 text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 focus:border-transparent transition-all placeholder-slate-400 bg-white"
                             />
                         </div>
 
@@ -249,92 +238,115 @@ export default function URLShortener() {
                         <button
                             onClick={shortenUrl}
                             disabled={isLoading}
-                            className="w-full bg-blue-500 hover:bg-blue-600 active:scale-95 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                         >
-                            <span>✨</span>
-                            {isLoading ? 'Shortening...' : 'Get your Short link for free'}
+                            {isLoading ? (
+                                <>
+                                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    Creating link...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    Generate short link
+                                </>
+                            )}
                         </button>
 
-                        {/* Results */}
+                        {/* Results Section */}
                         {showResult && (
-                            <div className="bg-gray-100 rounded-lg p-6 mt-8">
-                                <div className="mb-6 pb-6 border-b border-gray-300">
-                                    <div className="text-xs font-semibold text-gray-700 uppercase mb-2">
-                                        Original link
+                            <div className="mt-10 pt-10 border-t border-slate-200">
+                                {/* Success indicator */}
+                                <div className="mb-8 flex items-center gap-3">
+                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
+                                        <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
                                     </div>
-                                    <div className="text-lg text-blue-500 font-medium break-all">
-                                        {originalUrl}
-                                    </div>
+                                    <h3 className="text-lg font-semibold text-slate-900">Link created successfully</h3>
                                 </div>
-                                <div>
-                                    <div className="text-xs font-semibold text-gray-700 uppercase mb-2">
-                                        Shortened link
-                                    </div>
-                                    <div className="flex items-center gap-3 flex-wrap">
+
+                                {/* Original URL */}
+                                <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Original URL</p>
+                                    <p className="text-slate-700 break-all text-sm leading-relaxed">{originalUrl}</p>
+                                </div>
+
+                                {/* Shortened URL - Highlighted */}
+                                <div className="mb-6 p-5 bg-blue-50 rounded-lg border border-blue-200">
+                                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Your short link</p>
+                                    <div className="flex items-start gap-3 mb-4">
                                         <a
                                             href={shortUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-lg text-blue-500 font-medium hover:underline break-all"
+                                            className="text-blue-600 hover:text-blue-700 font-semibold text-lg break-all transition-colors"
                                         >
                                             {shortUrl}
                                         </a>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-wrap gap-2">
                                         <button
                                             onClick={copyToClipboard}
-                                            className={`px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                                                 copySuccess
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                                    ? 'bg-green-600 text-white'
+                                                    : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                                             }`}
                                         >
-                                            {copySuccess ? '✓ Copied' : 'Copy'}
+                                            {copySuccess ? '✓ Copied to clipboard' : 'Copy link'}
                                         </button>
                                         <button
                                             onClick={refreshClicks}
-                                            className="px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap bg-gray-500 hover:bg-gray-600 text-white"
+                                            className="px-4 py-2 rounded-lg font-medium text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-200"
                                         >
-                                            ↻ Refresh
+                                            Refresh stats
                                         </button>
                                         <button
                                             onClick={clearSavedUrl}
-                                            className="px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap bg-red-500 hover:bg-red-600 text-white"
+                                            className="px-4 py-2 rounded-lg font-medium text-sm bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-200"
                                         >
-                                            ✕ Clear
+                                            Clear
                                         </button>
                                     </div>
+                                </div>
 
-                                    {/* Click counter with auto-refresh indicator */}
-                                    <div className="mt-4 pt-4 border-t border-gray-300">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-semibold text-gray-700">Total Clicks:</span>
-                                                <span className="text-xs text-green-600 animate-pulse">● Auto-refresh</span>
-                                            </div>
-                                            <span className="text-2xl font-bold text-blue-600">
-                                                {clicks}
+                                {/* Stats Section */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Clicks */}
+                                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Clicks</p>
+                                            <span className="flex items-center gap-1.5 text-xs text-green-600 font-medium">
+                                                <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+                                                Live
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            Clicks update automatically every 5 seconds
-                                        </p>
+                                        <p className="text-3xl font-bold text-slate-900">{clicks}</p>
+                                        <p className="text-xs text-slate-500 mt-1">Updates every 5s</p>
                                     </div>
 
-                                    {/* Total Links Generated */}
-                                    <div className="mt-4 pt-4 border-t border-gray-300">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm font-semibold text-gray-700">Total Links Generated:</span>
-                                            <span className="text-2xl font-bold text-green-600">
-                                                {totalLinks}
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            Total number of links you've created
-                                        </p>
+                                    {/* Total Links */}
+                                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Total created</p>
+                                        <p className="text-3xl font-bold text-slate-900">{totalLinks}</p>
+                                        <p className="text-xs text-slate-500 mt-1">Links generated</p>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* Footer Info */}
+                <div className="mt-12 text-center">
+                    <p className="text-sm text-slate-600">
+                        <span className="font-medium text-slate-700">No signup required</span> • Fast & reliable • Real-time tracking
+                    </p>
                 </div>
             </div>
         </div>
