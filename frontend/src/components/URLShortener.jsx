@@ -112,19 +112,18 @@ export default function URLShortener() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(
-                "http://localhost:8080/api/shorten",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        url: url
-                    })
-                }
-            );
-
+    const response = await fetch(
+        "https://url-shortener-2-ymnf.onrender.com/api/shorten",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                url: url
+            })
+        }
+    );
             if (!response.ok) {
                 throw new Error("Failed to shorten URL");
             }
