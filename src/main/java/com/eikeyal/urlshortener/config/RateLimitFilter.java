@@ -15,17 +15,13 @@ import java.time.Duration;
 @Component
 public class RateLimitFilter implements Filter {
 
-
     private final StringRedisTemplate redisTemplate;
-
 
     public RateLimitFilter(StringRedisTemplate redisTemplate) {
 
         this.redisTemplate = redisTemplate;
 
     }
-
-
 
     @Override
     public void doFilter(
@@ -34,17 +30,11 @@ public class RateLimitFilter implements Filter {
             FilterChain chain
     ) throws IOException, ServletException {
 
-
-
         HttpServletRequest httpRequest =
                 (HttpServletRequest) request;
 
-
         HttpServletResponse httpResponse =
                 (HttpServletResponse) response;
-
-
-
         String path =
                 httpRequest.getRequestURI();
 
@@ -58,18 +48,12 @@ public class RateLimitFilter implements Filter {
             String ip =
                     httpRequest.getRemoteAddr();
 
-
-
             String key =
                     "rate_limit:" + ip;
-
-
 
             String count =
                     redisTemplate.opsForValue()
                             .get(key);
-
-
 
             if(count != null && Integer.parseInt(count) >= 15) {
 
@@ -79,12 +63,9 @@ public class RateLimitFilter implements Filter {
                 httpResponse.getWriter()
                         .write("Too many requests");
 
-
                 return;
 
             }
-
-
 
             if(count == null) {
 
